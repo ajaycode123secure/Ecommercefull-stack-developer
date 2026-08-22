@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import path from "path";
-dotenv.config({ path: path.resolve(__dirname, ".env") });
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 import express , { Request, Response } from "express";
 import cors from "cors";
@@ -9,6 +9,9 @@ import { clerkMiddleware } from '@clerk/express';
 import { clerkwebhook } from "./controllers/webhooks.js";
 
 const app = express();
+// Enable trust proxy for reverse proxy platforms like Render/Vercel
+app.set("trust proxy", 1);
+
 //Connect to MongoDB
 connectDB();
 
@@ -24,6 +27,12 @@ const PORT = process.env.PORT || 3000;
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Server is running!");
+});
+
+// Global Error Handler
+app.use((err: any, req: Request, res: Response, next: any) => {
+  console.error("Unhandled Server Error:", err);
+  res.status(500).json({ error: err.message || "Internal Server Error" });
 });
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);

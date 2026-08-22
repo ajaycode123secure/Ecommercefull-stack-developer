@@ -24,6 +24,7 @@ const clerkwebhook = async (req, res) => {
             }
             return res.json({ message: 'Webhook received and processed successfully' });
         }
+        return res.json({ message: 'Webhook received' });
     }
     catch (err) {
         console.error('Error verifying webhook:', err);
